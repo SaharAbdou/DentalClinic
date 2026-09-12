@@ -119,4 +119,49 @@ public class AppointmentService : IAppointmentService
         _unitOfWork.Appointments.Update(appointment);
         await _unitOfWork.SaveChangesAsync();
     }
+    public async Task<IReadOnlyList<AppointmentDto>> GetAllAsync(AppointmentStatus? status, Guid? doctorId, DateOnly? date)
+    {
+        var appointments = await _unitOfWork.Appointments.FindAsync(a =>
+            (!status.HasValue || a.Status == status.Value) &&
+            (!doctorId.HasValue || a.DoctorId == doctorId.Value) &&
+            (!date.HasValue || a.ScheduledAt.Date == date.Value.ToDateTime(TimeOnly.MinValue).Date));
+
+        var result = new List<AppointmentDto>();
+        foreach (var appointment in appointments.OrderByDescending(a => a.ScheduledAt))
+        {
+            var doctor = await _unitOfWork.Doctors.GetByIdAsync(appointment.DoctorId);
+            var patient = await _unitOfWork.Patients.GetByIdAsync(appointment.PatientId);
+
+            result.Add(new AppointmentDto
+            {
+                Id = appointment.Id,
+                DoctorId = appointment.DoctorId,
+                DoctorName = doctor?.Name ?? "غير معروف",
+                PatientId = appointment.PatientId,
+                PatientName = patient?.Name ?? "غير معروف",
+                AppointmentType = appointment.Type.ToString(),
+                ScheduledAt = appointment.ScheduledAt,
+                Status = appointment.Status.ToString()
+            });
+        }
+        return result;
+    }
+
+    public async Task ConfirmAsync(Guid appointmentId)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId)
+            ?? throw new ArgumentException("Appointment not found");
+        appointment.Confirm();
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task CompleteAsync(Guid appointmentId)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId)
+            ?? throw new ArgumentException("Appointment not found");
+        appointment.Complete();
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+    }
 }

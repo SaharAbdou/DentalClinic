@@ -20,4 +20,10 @@ public class DoctorWeeklyAvailability : BaseEntity
         StartTime = startTime;
         EndTime = endTime;
     }
+    public void Update(DayOfWeek dayOfWeek, TimeOnly startTime, TimeOnly endTime)
+    {
+        DayOfWeek = dayOfWeek;
+        StartTime = startTime;
+        EndTime = endTime;
+    }
 }

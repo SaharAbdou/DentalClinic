@@ -10,6 +10,7 @@ public interface IUnitOfWork
     IRepository<DoctorWeeklyAvailability> DoctorWeeklyAvailabilities { get; }
     IRepository<DoctorScheduleException> DoctorScheduleExceptions { get; }
     IRepository<BeforeAfterPhoto> BeforeAfterPhotos { get; }
+    IRepository<User> Users { get; }
 
     Task<int> SaveChangesAsync();
 }

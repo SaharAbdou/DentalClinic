@@ -6,6 +6,7 @@ namespace DentalClinic.Domain.Entities;
 public class Doctor : BaseEntity
 {
     public string Name { get; private set; } = null!;
+    public string? ProfileImageUrl { get; private set; }
     public DoctorSpecialty Specialty { get; private set; }
     public string? Bio { get; private set; }
 
@@ -16,16 +17,18 @@ public class Doctor : BaseEntity
 
     private Doctor() { } // EF Core
 
-    public Doctor(string name, DoctorSpecialty specialty, string? bio = null)
+    public Doctor(string name, DoctorSpecialty specialty, string? bio = null, string? profileImageUrl = null)
     {
         Name = name;
         Specialty = specialty;
         Bio = bio;
+        ProfileImageUrl = profileImageUrl;
     }
 
-    public void UpdateProfile(string name, string? bio)
+    public void UpdateProfile(string name, string? bio, string? profileImageUrl)
     {
         Name = name;
         Bio = bio;
+        ProfileImageUrl = profileImageUrl;
     }
 }

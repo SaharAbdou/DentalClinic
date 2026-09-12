@@ -13,4 +13,6 @@ public interface IDoctorService
     Task<IReadOnlyList<DoctorDto>> GetAllAsync();
     Task<DoctorDto?> GetByIdAsync(Guid id);
     Task<DoctorDto> CreateAsync(CreateDoctorDto dto);
+    Task UpdateAsync(Guid id, CreateDoctorDto dto);
+    Task DeleteAsync(Guid id);
 }

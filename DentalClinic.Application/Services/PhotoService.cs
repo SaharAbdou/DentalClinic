@@ -54,4 +54,11 @@ public class PhotoService : IPhotoService
             DisplayOrder = photo.DisplayOrder
         };
     }
+    public async Task DeleteAsync(Guid id)
+    {
+        var photo = await _unitOfWork.BeforeAfterPhotos.GetByIdAsync(id)
+            ?? throw new ArgumentException("Photo not found");
+        _unitOfWork.BeforeAfterPhotos.Remove(photo);
+        await _unitOfWork.SaveChangesAsync();
+    }
 }

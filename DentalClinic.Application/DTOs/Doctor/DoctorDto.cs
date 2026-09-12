@@ -12,4 +12,5 @@ public class DoctorDto
     public string Name { get; set; } = null!;
     public string Specialty { get; set; } = null!;
     public string? Bio { get; set; }
+    public string? ProfileImageUrl { get; set; }
 }

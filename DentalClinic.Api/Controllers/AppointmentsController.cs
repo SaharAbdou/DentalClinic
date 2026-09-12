@@ -1,5 +1,7 @@
 ﻿using DentalClinic.Application.DTOs.Appointment;
 using DentalClinic.Application.Interfaces;
+using DentalClinic.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentalClinic.Api.Controllers;
@@ -55,5 +57,28 @@ public class AppointmentsController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+    [Authorize]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll([FromQuery] AppointmentStatus? status, [FromQuery] Guid? doctorId, [FromQuery] DateOnly? date)
+    {
+        var appointments = await _appointmentService.GetAllAsync(status, doctorId, date);
+        return Ok(appointments);
+    }
+
+    [Authorize]
+    [HttpPatch("{id}/confirm")]
+    public async Task<IActionResult> Confirm(Guid id)
+    {
+        try { await _appointmentService.ConfirmAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+
+    [Authorize]
+    [HttpPatch("{id}/complete")]
+    public async Task<IActionResult> Complete(Guid id)
+    {
+        try { await _appointmentService.CompleteAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
     }
 }

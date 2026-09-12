@@ -28,7 +28,8 @@ public class DoctorService : IDoctorService
             Id = d.Id,
             Name = d.Name,
             Specialty = d.Specialty.ToString(),
-            Bio = d.Bio
+            Bio = d.Bio,
+            ProfileImageUrl =d.ProfileImageUrl
         }).ToList();
     }
 
@@ -42,7 +43,8 @@ public class DoctorService : IDoctorService
             Id = doctor.Id,
             Name = doctor.Name,
             Specialty = doctor.Specialty.ToString(),
-            Bio = doctor.Bio
+            Bio = doctor.Bio,
+            ProfileImageUrl = doctor.ProfileImageUrl
         };
     }
     public async Task<DoctorDto> CreateAsync(CreateDoctorDto dto)
@@ -50,7 +52,7 @@ public class DoctorService : IDoctorService
         if (!Enum.TryParse<DoctorSpecialty>(dto.Specialty, ignoreCase: true, out var specialty))
             throw new ArgumentException($"Invalid specialty: {dto.Specialty}");
 
-        var doctor = new Doctor(dto.Name, specialty, dto.Bio);
+        var doctor = new Doctor(dto.Name, specialty, dto.Bio, dto.ProfileImageUrl);
 
         await _unitOfWork.Doctors.AddAsync(doctor);
         await _unitOfWork.SaveChangesAsync();
@@ -60,7 +62,25 @@ public class DoctorService : IDoctorService
             Id = doctor.Id,
             Name = doctor.Name,
             Specialty = doctor.Specialty.ToString(),
-            Bio = doctor.Bio
+            Bio = doctor.Bio,
+            ProfileImageUrl = doctor.ProfileImageUrl
         };
+    }
+    public async Task UpdateAsync(Guid id, CreateDoctorDto dto)
+    {
+        var doctor = await _unitOfWork.Doctors.GetByIdAsync(id) ?? throw new ArgumentException("Doctor not found");
+        if (!Enum.TryParse<DoctorSpecialty>(dto.Specialty, true, out var specialty))
+            throw new ArgumentException($"Invalid specialty: {dto.Specialty}");
+
+        doctor.UpdateProfile(dto.Name, dto.Bio, dto.ProfileImageUrl);
+        _unitOfWork.Doctors.Update(doctor);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var doctor = await _unitOfWork.Doctors.GetByIdAsync(id) ?? throw new ArgumentException("Doctor not found");
+        _unitOfWork.Doctors.Remove(doctor);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

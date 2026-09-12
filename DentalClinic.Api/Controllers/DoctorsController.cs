@@ -2,7 +2,9 @@
 using DentalClinic.Application.DTOs.Photo;
 using DentalClinic.Application.DTOs.Schedule;
 using DentalClinic.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace DentalClinic.Api.Controllers;
 
@@ -63,5 +65,64 @@ public class DoctorsController : ControllerBase
     {
         var photo = await _photoService.CreateAsync(doctorId, dto);
         return CreatedAtAction(nameof(GetPhotos), new { doctorId }, photo);
+    }
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] CreateDoctorDto dto)
+    {
+        try { await _doctorService.UpdateAsync(id, dto); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try { await _doctorService.DeleteAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+    [Authorize]
+    [HttpPut("weekly-availability/{id}")]
+    public async Task<IActionResult> UpdateAvailability(Guid id, [FromBody] CreateWeeklyAvailabilityDto dto)
+    {
+        try { await _availabilityService.UpdateWeeklyAvailabilityAsync(id, dto); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+
+    [Authorize]
+    [HttpDelete("weekly-availability/{id}")]
+    public async Task<IActionResult> DeleteAvailability(Guid id)
+    {
+        try { await _availabilityService.DeleteWeeklyAvailabilityAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+    [Authorize]
+    [HttpGet("{doctorId}/exceptions")]
+    public async Task<IActionResult> GetExceptions(Guid doctorId)
+    {
+        return Ok(await _availabilityService.GetExceptionsAsync(doctorId));
+    }
+
+    [Authorize]
+    [HttpPost("{doctorId}/exceptions")]
+    public async Task<IActionResult> AddException(Guid doctorId, [FromBody] CreateExceptionDto dto)
+    {
+        var result = await _availabilityService.AddExceptionAsync(doctorId, dto);
+        return CreatedAtAction(nameof(GetExceptions), new { doctorId }, result);
+    }
+
+    [Authorize]
+    [HttpDelete("exceptions/{id}")]
+    public async Task<IActionResult> DeleteException(Guid id)
+    {
+        try { await _availabilityService.DeleteExceptionAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
+    }
+    [Authorize]
+    [HttpDelete("photos/{id}")]
+    public async Task<IActionResult> DeletePhoto(Guid id)
+    {
+        try { await _photoService.DeleteAsync(id); return NoContent(); }
+        catch (ArgumentException ex) { return NotFound(new { message = ex.Message }); }
     }
 }

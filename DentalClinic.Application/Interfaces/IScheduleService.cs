@@ -11,4 +11,5 @@ namespace DentalClinic.Application.Interfaces;
 public interface IScheduleService
 {
     Task<IReadOnlyList<AvailableSlotDto>> GetAvailableSlotsAsync(Guid doctorId, DateOnly date);
+    Task<IReadOnlyList<AvailableDayDto>> GetAvailableDaysAsync(Guid doctorId, int year, int month);
 }

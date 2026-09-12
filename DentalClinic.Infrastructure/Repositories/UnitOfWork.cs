@@ -14,6 +14,7 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<DoctorWeeklyAvailability> DoctorWeeklyAvailabilities { get; }
     public IRepository<DoctorScheduleException> DoctorScheduleExceptions { get; }
     public IRepository<BeforeAfterPhoto> BeforeAfterPhotos { get; }
+    public IRepository<User> Users { get; }
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -24,7 +25,8 @@ public class UnitOfWork : IUnitOfWork
         DoctorWeeklyAvailabilities = new Repository<DoctorWeeklyAvailability>(context);
         DoctorScheduleExceptions = new Repository<DoctorScheduleException>(context);
         BeforeAfterPhotos = new Repository<BeforeAfterPhoto>(context);
+        Users = new Repository<User>(context);
     }
 
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
-}
+}   

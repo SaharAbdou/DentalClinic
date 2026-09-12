@@ -19,4 +19,10 @@ public class ScheduleController : ControllerBase
         var slots = await _scheduleService.GetAvailableSlotsAsync(doctorId, date);
         return Ok(slots);
     }
+    [HttpGet("available-days")]
+    public async Task<IActionResult> GetAvailableDays([FromQuery] Guid doctorId, [FromQuery] int year, [FromQuery] int month)
+    {
+        var days = await _scheduleService.GetAvailableDaysAsync(doctorId, year, month);
+        return Ok(days);
+    }
 }

@@ -12,4 +12,5 @@ public interface IPhotoService
 {
     Task<IReadOnlyList<PhotoDto>> GetByDoctorIdAsync(Guid doctorId);
     Task<PhotoDto> CreateAsync(Guid doctorId, CreatePhotoDto dto);
+    Task DeleteAsync(Guid id);
 }

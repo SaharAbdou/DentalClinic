@@ -79,4 +79,26 @@ public class ScheduleService : IScheduleService
 
         return allSlots.Where(s => !bookedTimes.Contains(s.StartTime)).ToList();
     }
+    public async Task<IReadOnlyList<AvailableDayDto>> GetAvailableDaysAsync(Guid doctorId, int year, int month)
+    {
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var availableDays = new List<AvailableDayDto>();
+
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(year, month, day);
+
+            // نتجاهل الأيام اللي فاتت
+            if (date < DateOnly.FromDateTime(DateTime.Today))
+                continue;
+
+            var slots = await GetAvailableSlotsAsync(doctorId, date);
+            if (slots.Any())
+            {
+                availableDays.Add(new AvailableDayDto { Date = date });
+            }
+        }
+
+        return availableDays;
+    }
 }
